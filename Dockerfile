@@ -29,7 +29,6 @@ RUN \
     gettext-dev \
     git \
     gnu-libiconv-dev \
-    libdvbcsa-dev \
     libgcrypt-dev \
     libhdhomerun-dev \
     libtool \
@@ -130,6 +129,16 @@ RUN \
   make -j 2 && \
   make test && \
   make DESTDIR=/tmp/xmltv-build install
+
+ RUN \
+ echo "***** compile libdvbcsa sse2 ****" && \
+ git clone https://github.com/glenvt18/libdvbcsa /tmp/libdvbcsa && \
+ cd /tmp/libdvbcsa && \
+ autoreconf -i && \
+ ./configure \
+	--enable-sse2 && \
+ make -j 2 && \
+ make  install
 
 RUN \
   echo "**** compile tvheadend ****" && \
@@ -235,7 +244,6 @@ RUN \
     ffmpeg \
     ffmpeg4-libs \
     gnu-libiconv \
-    libdvbcsa \
     libhdhomerun-libs \
     libva \
     libva-intel-driver \
@@ -314,6 +322,7 @@ COPY --from=buildstage /tmp/xmltv-build/usr/ /usr/
 COPY --from=buildstage /usr/local/share/man/ /usr/local/share/man/
 COPY --from=buildstage /usr/local/share/perl5/ /usr/local/share/perl5/
 COPY --from=piconsstage /picons.tar.bz2 /picons.tar.bz2
+COPY --from=buildstage /usr/local/lib/libdvbcsa* /usr/local/lib/
 COPY root/ /
 
 # ports and volumes
