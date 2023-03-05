@@ -1,0 +1,36 @@
+From 6302d69216777a51a3b27ca9ba379d807dd8101d Mon Sep 17 00:00:00 2001
+From: pykpkg47 <118465017+pykpkg47@users.noreply.github.com>
+Date: Sun, 5 Mar 2023 02:43:18 +0000
+Subject: [PATCH] fix for 64bit time_t on 32bit systems
+
+---
+ src/epggrab/otamux.c | 2 +-
+ src/tvheadend.h      | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/epggrab/otamux.c b/src/epggrab/otamux.c
+index 4888158bab..6078cd7356 100644
+--- a/src/epggrab/otamux.c
++++ b/src/epggrab/otamux.c
+@@ -723,7 +723,7 @@ epggrab_ota_start_cb ( void *p );
+ static void
+ epggrab_ota_next_arm( time_t next )
+ {
+-  tvhtrace(LS_EPGGRAB, "next ota start event in %li seconds", next - time(NULL));
++  tvhtrace(LS_EPGGRAB, "next ota start event in %"PRId64" seconds", next - time(NULL));
+   gtimer_arm_absn(&epggrab_ota_start_timer, epggrab_ota_start_cb, NULL, next);
+   dbus_emit_signal_s64("/epggrab/ota", "next", next);
+ }
+diff --git a/src/tvheadend.h b/src/tvheadend.h
+index 8a7965235d..79fe55e25e 100644
+--- a/src/tvheadend.h
++++ b/src/tvheadend.h
+@@ -337,7 +337,7 @@ void tvh_qsort_r(void *base, size_t nmemb, size_t size, int (*compar)(const void
+ #if __WORDSIZE == 32 && defined(PLATFORM_FREEBSD)
+ #define PRItime_t       "d"
+ #else
+-#define PRItime_t       "ld"
++#define PRItime_t       PRId64
+ #endif
+ 
+ /* transcoding */
