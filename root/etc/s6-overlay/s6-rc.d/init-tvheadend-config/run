@@ -41,7 +41,6 @@ done
 echo "Setting permissions"
 abc_dirs=( \
 /config \
-/picons \
 )
 for i in "${abc_dirs[@]}"; do
         if [ "$(ls -A ${i})" ]; then
